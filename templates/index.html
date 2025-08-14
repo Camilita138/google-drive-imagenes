@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir PDF</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- ✅ CSS embebido -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #loading-message,
+        #success-message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #loading-message {
+            color: #007bff;
+        }
+
+        #success-message {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Extractor imagenes PDF- URL de imagenes en Google Sheet</h1>
+    <form id="uploadForm" action="/" method="POST" enctype="multipart/form-data">
+        <label for="pdf_file">Selecciona un archivo PDF:</label>
+        <input type="file" name="pdf_file" id="pdf_file" required>
+
+        <label for="sheet_name">Selecciona la hoja a actualizar:</label>
+        <select name="sheet_name" id="sheet_name" required>
+            {% for hoja in hojas_disponibles %}
+                <option value="{{ hoja }}">{{ hoja }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Subir</button>
+    </form>
+
+    <!-- Mensaje de carga -->
+    <div id="loading-message" style="display:none;">
+        <p>El proceso está en marcha, por favor espera...</p>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div id="success-message" style="display:none;">
+        <p>¡Éxito! Las imágenes han sido cargadas y la hoja de Excel ha sido actualizada.</p>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#uploadForm').on('submit', function (e) {
+                e.preventDefault();
+
+                $('#success-message').hide();
+                $('#loading-message').show();
+
+                var formData = new FormData(this);
+                
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function () {
+                        $('#loading-message').hide();
+                        $('#success-message').show();
+                    },
+                    error: function () {
+                        alert("Hubo un error al procesar el archivo.");
+                        $('#loading-message').hide();
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
